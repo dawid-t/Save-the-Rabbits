@@ -2,51 +2,38 @@
 
 public class TerrainCutter : MonoBehaviour
 {
-	public GameObject gameObjectToCut;
+	private Vector3 lastVelocity;
+	private Rigidbody rb;
+	[SerializeField]
+	private MouseSlice mouseSlice;
 
 
-	private void Start()
+	private void Awake()
 	{
-		CutMesh();
+		rb = GetComponent<Rigidbody>();
 	}
 
-	private void Update()
+	private void FixedUpdate()
 	{
+		lastVelocity = rb.velocity;
+	}
 
+	private void OnCollisionEnter(Collision collision)
+	{
+		/*Debug.Log("start: "+transform.position+
+				"; end: "+transform.position+lastVelocity+
+				";end normalized: "+lastVelocity.normalized);*/
+		if(collision.gameObject.CompareTag("Sliceable"))
+		{
+			mouseSlice.CutMesh(transform.position, transform.position+lastVelocity.normalized, Vector3.forward, collision.gameObject);
+
+			// TODO: create effects here
+			Destroy(gameObject);
+		}
 	}
 
 	public void CutMesh()
 	{
-		/*
-		 * 1. Pobierz dotknietego mesha
-		 * 2. Przetnij go w miejscu gdzie byl dotkniety
-		 *
-		 * ?. Przetnij mesha w pół
-		 */
-		MeshFilter meshFilter = gameObjectToCut.GetComponent<MeshFilter>();
-		Mesh mesh = meshFilter.sharedMesh;
 
-		/*foreach(Vector3 vec in mesh.vertices)
-		{
-			Debug.Log(vec);
-		}*/
-		//Debug.Log("vertices: "+mesh.vertices.Length+", triangles: "+mesh.triangles.Length);
-
-		GameObject firstPiece = new GameObject(gameObjectToCut.name+"-FirstPiece");
-		MeshFilter firstPieceMeshFilter = firstPiece.AddComponent<MeshFilter>();
-		firstPiece.AddComponent<MeshRenderer>();
-
-		firstPieceMeshFilter.sharedMesh = new Mesh();
-		firstPieceMeshFilter.sharedMesh.vertices = new Vector3[mesh.vertices.Length];
-
-		int i = 0;
-		foreach(Vector3 vec in mesh.vertices)
-		{
-			if(mesh.vertices[i].x < 0)
-			{
-				firstPieceMeshFilter.sharedMesh.vertices[i] = mesh.vertices[i];
-			}
-			i++;
-		}
 	}
 }

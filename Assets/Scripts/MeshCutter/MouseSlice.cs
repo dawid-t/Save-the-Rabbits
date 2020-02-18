@@ -14,7 +14,7 @@ public class MouseSlice : MonoBehaviour {
     public bool drawPlane;
     
     // Reference to the line renderer
-    public ScreenLineRenderer lineRenderer;
+    //public ScreenLineRenderer lineRenderer;
 
     private MeshCutter meshCutter;
     private TempMesh biggerMesh, smallerMesh;
@@ -38,7 +38,7 @@ public class MouseSlice : MonoBehaviour {
         meshCutter = new MeshCutter(256);
 	}
 
-    private void OnEnable()
+    /*private void OnEnable()
     {
         lineRenderer.OnLineDrawn += OnLineDrawn;
     }
@@ -46,9 +46,9 @@ public class MouseSlice : MonoBehaviour {
     private void OnDisable()
     {
         lineRenderer.OnLineDrawn -= OnLineDrawn;
-    }
+    }*/
 
-    private void OnLineDrawn(Vector3 start, Vector3 end, Vector3 depth)
+	public void CutMesh(Vector3 start, Vector3 end, Vector3 depth, GameObject objectToSlice)
     {
         var planeTangent = (end - start).normalized;
 
@@ -60,13 +60,14 @@ public class MouseSlice : MonoBehaviour {
 
         if (drawPlane) DrawPlane(start, end, normalVec);
 
-        SliceObjects(start, normalVec);
+        SliceObjects(start, normalVec, objectToSlice);
     }
     
 
-    void SliceObjects(Vector3 point, Vector3 normal)
+    void SliceObjects(Vector3 point, Vector3 normal, GameObject objectToSlice)
     {
-        var toSlice = GameObject.FindGameObjectsWithTag("Sliceable");
+		var toSlice = new GameObject[1]; //GameObject.FindGameObjectsWithTag("Sliceable");
+		toSlice[0] = objectToSlice;
 
         // Put results in positive and negative array so that we separate all meshes if there was a cut made
         List<Transform> positive = new List<Transform>(),

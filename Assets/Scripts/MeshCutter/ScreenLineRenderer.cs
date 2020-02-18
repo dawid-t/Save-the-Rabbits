@@ -5,8 +5,8 @@ using UnityEngine;
 public class ScreenLineRenderer : MonoBehaviour {
 
     // Line Drawn event handler
-    public delegate void LineDrawnHandler(Vector3 begin, Vector3 end, Vector3 depth);
-    public event LineDrawnHandler OnLineDrawn;
+    //public delegate void LineDrawnHandler(Vector3 begin, Vector3 end, Vector3 depth);
+    //public event LineDrawnHandler OnLineDrawn;
 
     bool dragging;
     Vector3 start;
@@ -21,7 +21,7 @@ public class ScreenLineRenderer : MonoBehaviour {
         dragging = false;
     }
 
-    private void OnEnable()
+    /*private void OnEnable()
     {
         Camera.onPostRender += PostRenderDrawLine;
     }
@@ -29,7 +29,7 @@ public class ScreenLineRenderer : MonoBehaviour {
     private void OnDisable()
     {
         Camera.onPostRender -= PostRenderDrawLine;
-    }
+    }*/
 
     // Update is called once per frame
     void Update () {
@@ -53,11 +53,14 @@ public class ScreenLineRenderer : MonoBehaviour {
             var startRay = cam.ViewportPointToRay(start);
             var endRay = cam.ViewportPointToRay(end);
 
+			/*Debug.Log("start: "+startRay.GetPoint(cam.nearClipPlane)+
+				"; end: "+endRay.GetPoint(cam.nearClipPlane)+
+				";end normalized: "+endRay.direction.normalized);*/
             // Raise OnLineDrawnEvent
-            OnLineDrawn?.Invoke(
+            /*OnLineDrawn?.Invoke(
                 startRay.GetPoint(cam.nearClipPlane),
                 endRay.GetPoint(cam.nearClipPlane),
-                endRay.direction.normalized);
+                endRay.direction.normalized);*/
         }
     }
     
