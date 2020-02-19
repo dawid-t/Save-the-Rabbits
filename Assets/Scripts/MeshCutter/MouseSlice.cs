@@ -139,6 +139,13 @@ public class MouseSlice : MonoBehaviour {
 		UpdateMeshCollider(mesh, obj.GetComponent<MeshCollider>());
 		UpdateMeshCollider(newObjMesh, newObject.GetComponent<MeshCollider>());
 
+		// Set "IsKinematic" to true in Rigidbodies:
+		UpdateRigidbody(obj.GetComponent<Rigidbody>());
+		UpdateRigidbody(newObject.GetComponent<Rigidbody>());
+
+		// Set "IsKinematic" to false in Rigidbody where its GameObjects collide with TerrainHolder:
+		TerrainHolder.HoldTerrains();
+
 		(posBigger ? positiveObjects : negativeObjects).Add(obj.transform);
         (posBigger ? negativeObjects : positiveObjects).Add(newObject.transform);
 
@@ -175,7 +182,15 @@ public class MouseSlice : MonoBehaviour {
 		}
 	}
 
-    void SeparateMeshes(Transform posTransform, Transform negTransform, Vector3 localPlaneNormal)
+	private void UpdateRigidbody(Rigidbody rb)
+	{
+		if(rb != null)
+		{
+			rb.isKinematic = false;
+		}
+	}
+
+	void SeparateMeshes(Transform posTransform, Transform negTransform, Vector3 localPlaneNormal)
     {
         // Bring back normal in world space
         Vector3 worldNormal = ((Vector3)(posTransform.worldToLocalMatrix.transpose * localPlaneNormal)).normalized;

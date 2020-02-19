@@ -20,14 +20,11 @@ public class TerrainCutter : MonoBehaviour
 		lastVelocity = rb.velocity;
 	}
 
-	private void OnCollisionEnter(Collision collision)
+	private void OnTriggerEnter(Collider other)
 	{
-		/*Debug.Log("start: "+transform.position+
-				"; end: "+transform.position+lastVelocity+
-				";end normalized: "+lastVelocity.normalized);*/
-		if(collision.gameObject.CompareTag("Sliceable"))
+		if(other.gameObject.CompareTag("Sliceable"))
 		{
-			mouseSlice.CutMesh(transform.position, transform.position+lastVelocity.normalized, Vector3.forward, collision.gameObject);
+			mouseSlice.CutMesh(transform.position, transform.position+lastVelocity.normalized, Vector3.forward, other.gameObject);
 
 			// TODO: create effects here
 		}
