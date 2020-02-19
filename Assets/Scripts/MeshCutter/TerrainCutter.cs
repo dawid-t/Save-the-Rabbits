@@ -4,8 +4,10 @@ public class TerrainCutter : MonoBehaviour
 {
 	private Vector3 lastVelocity;
 	private Rigidbody rb;
-	[SerializeField]
 	private MouseSlice mouseSlice;
+
+
+	public MouseSlice MouseSlice { get => mouseSlice; set => mouseSlice = value; }
 
 
 	private void Awake()
@@ -28,12 +30,7 @@ public class TerrainCutter : MonoBehaviour
 			mouseSlice.CutMesh(transform.position, transform.position+lastVelocity.normalized, Vector3.forward, collision.gameObject);
 
 			// TODO: create effects here
-			Destroy(gameObject);
 		}
-	}
-
-	public void CutMesh()
-	{
-
+		Destroy(gameObject);
 	}
 }
