@@ -4,7 +4,9 @@ public class ThrowPoop : MonoBehaviour
 {
 	private bool clicked = false, cancel = false;
 	[SerializeField]
-	private int poopVelocity = 10;
+	private int poopVelocityMultiplier = 10;
+	private int maxDragSqrMagnitude = 5;
+	private float dragSqrMagnitude;
 	private Ray startRay, endRay;
 	[SerializeField]
 	private MouseSlice mouseSlice;
@@ -12,6 +14,10 @@ public class ThrowPoop : MonoBehaviour
 	private GameObject poopPrefab;
 	private new Camera camera;
 	private LineRenderer poopDirectionLineRenderer;
+
+
+	public int MaxDragSqrMagnitude => maxDragSqrMagnitude;
+	public float DragSqrMagnitude => dragSqrMagnitude;
 
 
 	private void Awake()
@@ -33,6 +39,7 @@ public class ThrowPoop : MonoBehaviour
 		{
 			clicked = true;
 			cancel = false;
+			Cursor.visible = false;
 			poopDirectionLineRenderer.positionCount = 2;
 
 			startRay = camera.ScreenPointToRay(Input.mousePosition);
@@ -45,19 +52,18 @@ public class ThrowPoop : MonoBehaviour
 
 		if(clicked) // Holding the left mouse button.
 		{
-			int maxSqrMagnitude = 5;
 			Ray endRayTmp = camera.ScreenPointToRay(Input.mousePosition);
-			endRay.origin = Vector3.MoveTowards(startRay.origin, endRayTmp.origin, Mathf.Sqrt(maxSqrMagnitude));
+			endRay.origin = Vector3.MoveTowards(startRay.origin, endRayTmp.origin, Mathf.Sqrt(maxDragSqrMagnitude));
 
 			//poopDirectionLineRenderer.SetPosition(1, endRay.origin); // Free draw.
 			Vector3 gameObjectPosition = new Vector3(transform.position.x, transform.position.y, startRay.origin.z);
 			poopDirectionLineRenderer.SetPosition(1, gameObjectPosition+(endRay.origin - startRay.origin)); // Draw on the Rabbit.
 
-			// LineRenderer color:
-			float sqrMagnitude = Mathf.Abs((endRayTmp.origin - startRay.origin).sqrMagnitude);
-			sqrMagnitude = (sqrMagnitude <= 5) ? sqrMagnitude : maxSqrMagnitude;
+			dragSqrMagnitude = Mathf.Abs((endRayTmp.origin - startRay.origin).sqrMagnitude);
+			dragSqrMagnitude = (dragSqrMagnitude <= 5) ? dragSqrMagnitude : maxDragSqrMagnitude;
 
-			float hsvColorPercent = Mathf.Abs(sqrMagnitude-maxSqrMagnitude)/maxSqrMagnitude * 0.32f; // 0% (min) = red, 16% (mid) = yellow, 32% (max) = green.
+			// LineRenderer color:
+			float hsvColorPercent = Mathf.Abs(dragSqrMagnitude-maxDragSqrMagnitude)/maxDragSqrMagnitude * 0.32f; // 0% (min) = red, 16% (mid) = yellow, 32% (max) = green.
 			poopDirectionLineRenderer.sharedMaterial.SetColor("_BaseColor", Color.HSVToRGB(hsvColorPercent, 1, 1));
 		}
 	}
@@ -67,14 +73,17 @@ public class ThrowPoop : MonoBehaviour
 		if(Input.GetMouseButtonUp(0) && !cancel) // Released the left mouse button.
 		{
 			clicked = false;
+			Cursor.visible = true;
 			poopDirectionLineRenderer.positionCount = 0;
 
 			GameObject poop = Instantiate(poopPrefab, transform.position, Quaternion.identity);
 			poop.GetComponent<TerrainCutter>().MouseSlice = mouseSlice;
 
 			Vector3 velocity = endRay.origin - startRay.origin;
-			poop.GetComponent<Rigidbody>().velocity = new Vector3(velocity.x, velocity.y, 0)*(-poopVelocity);
+			poop.GetComponent<Rigidbody>().velocity = new Vector3(velocity.x, velocity.y, 0)*(-poopVelocityMultiplier);
 			Destroy(poop, 10);
+
+			dragSqrMagnitude = 0;
 		}
 	}
 
@@ -84,7 +93,10 @@ public class ThrowPoop : MonoBehaviour
 		{
 			clicked = false;
 			cancel = true;
+			Cursor.visible = true;
 			poopDirectionLineRenderer.positionCount = 0;
+
+			dragSqrMagnitude = 0;
 		}
 	}
 }
