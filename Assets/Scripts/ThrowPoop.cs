@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ThrowPoop : MonoBehaviour
 {
@@ -32,6 +33,11 @@ public class ThrowPoop : MonoBehaviour
 
 	private void Update()
 	{
+		if(EventSystem.current.IsPointerOverGameObject())
+		{
+			return;
+		}
+
 		SetThrowForce();
 		Throw();
 		CancelThrow();
@@ -102,6 +108,7 @@ public class ThrowPoop : MonoBehaviour
 			fartAudioSource.pitch = 1.8f - dragSqrMagnitude/maxDragSqrMagnitude;
 			fartAudioSource.PlayOneShot(fartAudioSource.clip);
 
+			Points.Instance.AddShot();
 			dragSqrMagnitude = 0;
 		}
 	}

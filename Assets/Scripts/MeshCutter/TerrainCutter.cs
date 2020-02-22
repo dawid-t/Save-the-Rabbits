@@ -33,7 +33,7 @@ public class TerrainCutter : MonoBehaviour
 		{
 			spawnedEffect = Instantiate(bloodPrefab, other.transform.position, Quaternion.identity);
 			Destroy(other.transform.parent.gameObject);
-			// todo: restart LEVEL
+			Basket.Instance.Fail(true);
 		}
 		else // Ground collision.
 		{
