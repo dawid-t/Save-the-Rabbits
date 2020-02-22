@@ -2,6 +2,8 @@
 
 public class TerrainCutter : MonoBehaviour
 {
+	[SerializeField]
+	private GameObject bloodPrefab, poopBumPrefab;
 	private Vector3 lastVelocity;
 	private Rigidbody rb;
 	private MouseSlice mouseSlice;
@@ -22,12 +24,27 @@ public class TerrainCutter : MonoBehaviour
 
 	private void OnTriggerEnter(Collider other)
 	{
-		if(other.gameObject.CompareTag("Sliceable"))
-		{
-			mouseSlice.CutMesh(transform.position, transform.position+lastVelocity.normalized, Vector3.forward, other.gameObject);
+		Vector3 vec = new Vector3(transform.position.x+0.2f, transform.position.y+0.2f, -2);
+		float angle = Mathf.Atan2(lastVelocity.y, lastVelocity.x) * Mathf.Rad2Deg;
+		Quaternion quat = Quaternion.AngleAxis(angle, Vector3.forward);
+		GameObject spawnedEffect;
 
-			// TODO: create effects here
+		if(other.transform.parent != null && other.transform.parent.CompareTag("SmallRabbit")) // Small rabbit collision (restart the level).
+		{
+			spawnedEffect = Instantiate(bloodPrefab, other.transform.position, Quaternion.identity);
+			Destroy(other.transform.parent.gameObject);
+			// todo: restart LEVEL
 		}
+		else // Ground collision.
+		{
+			if(other.gameObject.CompareTag("Sliceable"))
+			{
+				mouseSlice.CutMesh(transform.position, transform.position+lastVelocity.normalized, Vector3.forward, other.gameObject);
+			}
+			spawnedEffect = Instantiate(poopBumPrefab, vec, quat);
+		}
+
+		Destroy(spawnedEffect, 1);
 		Destroy(gameObject);
 	}
 }

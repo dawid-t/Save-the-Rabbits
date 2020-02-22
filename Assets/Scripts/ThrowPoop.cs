@@ -11,7 +11,9 @@ public class ThrowPoop : MonoBehaviour
 	[SerializeField]
 	private MouseSlice mouseSlice;
 	[SerializeField]
-	private GameObject poopPrefab;
+	private GameObject poopPrefab, buttFirePrefab;
+	[SerializeField]
+	private Transform butt, buttFirePositionRight, buttFirePositionLeft;
 	private new Camera camera;
 	private LineRenderer poopDirectionLineRenderer;
 
@@ -46,7 +48,7 @@ public class ThrowPoop : MonoBehaviour
 			endRay = camera.ScreenPointToRay(Input.mousePosition);
 
 			//poopDirectionLineRenderer.SetPosition(0, startRay.origin); // Free draw.
-			Vector3 gameObjectPosition = new Vector3(transform.position.x, transform.position.y, startRay.origin.z);
+			Vector3 gameObjectPosition = new Vector3(butt.position.x, butt.position.y, startRay.origin.z);
 			poopDirectionLineRenderer.SetPosition(0, gameObjectPosition); // Draw on the Rabbit.
 		}
 
@@ -56,7 +58,7 @@ public class ThrowPoop : MonoBehaviour
 			endRay.origin = Vector3.MoveTowards(startRay.origin, endRayTmp.origin, Mathf.Sqrt(maxDragSqrMagnitude));
 
 			//poopDirectionLineRenderer.SetPosition(1, endRay.origin); // Free draw.
-			Vector3 gameObjectPosition = new Vector3(transform.position.x, transform.position.y, startRay.origin.z);
+			Vector3 gameObjectPosition = new Vector3(butt.position.x, butt.position.y, startRay.origin.z);
 			poopDirectionLineRenderer.SetPosition(1, gameObjectPosition+(endRay.origin - startRay.origin)); // Draw on the Rabbit.
 
 			dragSqrMagnitude = Mathf.Abs((endRayTmp.origin - startRay.origin).sqrMagnitude);
@@ -76,12 +78,17 @@ public class ThrowPoop : MonoBehaviour
 			Cursor.visible = true;
 			poopDirectionLineRenderer.positionCount = 0;
 
-			GameObject poop = Instantiate(poopPrefab, transform.position, Quaternion.identity);
+			GameObject poop = Instantiate(poopPrefab, butt.position, Quaternion.identity);
 			poop.GetComponent<TerrainCutter>().MouseSlice = mouseSlice;
 
 			Vector3 velocity = endRay.origin - startRay.origin;
 			poop.GetComponent<Rigidbody>().velocity = new Vector3(velocity.x, velocity.y, 0)*(-poopVelocityMultiplier);
 			Destroy(poop, 10);
+
+			GameObject buttFire = Instantiate(buttFirePrefab, buttFirePositionRight.position, buttFirePositionRight.rotation);
+			GameObject buttFire2 = Instantiate(buttFirePrefab, buttFirePositionLeft.position, buttFirePositionLeft.rotation);
+			Destroy(buttFire, 1);
+			Destroy(buttFire2, 1);
 
 			dragSqrMagnitude = 0;
 		}
