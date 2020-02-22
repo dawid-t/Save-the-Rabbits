@@ -14,6 +14,7 @@ public class ThrowPoop : MonoBehaviour
 	private GameObject poopPrefab, buttFirePrefab;
 	[SerializeField]
 	private Transform butt, buttFirePositionRight, buttFirePositionLeft;
+	private AudioSource fartAudioSource;
 	private new Camera camera;
 	private LineRenderer poopDirectionLineRenderer;
 
@@ -24,6 +25,7 @@ public class ThrowPoop : MonoBehaviour
 
 	private void Awake()
 	{
+		fartAudioSource = GetComponent<AudioSource>();
 		camera = Camera.main;
 		poopDirectionLineRenderer = GetComponent<LineRenderer>();
 	}
@@ -85,10 +87,20 @@ public class ThrowPoop : MonoBehaviour
 			poop.GetComponent<Rigidbody>().velocity = new Vector3(velocity.x, velocity.y, 0)*(-poopVelocityMultiplier);
 			Destroy(poop, 10);
 
+			// Effects:
 			GameObject buttFire = Instantiate(buttFirePrefab, buttFirePositionRight.position, buttFirePositionRight.rotation);
 			GameObject buttFire2 = Instantiate(buttFirePrefab, buttFirePositionLeft.position, buttFirePositionLeft.rotation);
+
+			float buttFireSize = 0.1f + 0.2f*(dragSqrMagnitude/maxDragSqrMagnitude);
+			buttFire.transform.localScale = new Vector3(buttFireSize, buttFireSize, 1);
+			buttFire2.transform.localScale = new Vector3(buttFireSize, buttFireSize, 1);
+
 			Destroy(buttFire, 1);
 			Destroy(buttFire2, 1);
+
+			// Sound:
+			fartAudioSource.pitch = 1.8f - dragSqrMagnitude/maxDragSqrMagnitude;
+			fartAudioSource.PlayOneShot(fartAudioSource.clip);
 
 			dragSqrMagnitude = 0;
 		}
