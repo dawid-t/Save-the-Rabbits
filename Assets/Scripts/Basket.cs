@@ -34,6 +34,7 @@ public class Basket : MonoBehaviour
 			if(!rabbitsInBasketList.Contains(rabbit))
 			{
 				rabbitsInBasketList.Add(rabbit);
+				rabbit.transform.GetChild(0).gameObject.layer = 0;
 				if(rabbitsInBasketList.Count == goal)
 				{
 					GoalReached();
@@ -50,6 +51,7 @@ public class Basket : MonoBehaviour
 			if(rabbitsInBasketList.Contains(rabbit))
 			{
 				rabbitsInBasketList.Remove(rabbit);
+				rabbit.transform.GetChild(0).gameObject.layer = 8;
 			}
 		}
 	}
